@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 import uuid
 import slugify
 import os
-from django.core.validators import MaxLengthValidator
+from django.core.validators import MaxLengthValidator, RegexValidator
 from django.core.exceptions import ValidationError
 # Create your models here.
 
@@ -45,6 +45,14 @@ POSITION_CHOICES = (
 PROJECT_TYPES = (
     ('internal','داخلی'),
     ('external','خارجی')
+)
+
+
+# some request type for contact us
+REQUEST_TYPE_CHOICES = (
+    ('individual','فردی'),
+    ('company','شرکت'),
+    ('business_owner','صاحب کسب و کار / مغازه')
 )
 
 
@@ -528,3 +536,26 @@ class PackageComments(models.Model):
     def __str__(self):
         return f'ثبت کامنت برای دوره آموزشی {self.package.title} توسط {self.first_name} {self.last_name}'
 
+
+class Contacts(models.Model):
+    full_name = models.CharField(max_length=50, verbose_name='نام و نام خانوادگی')
+    email = models.EmailField(verbose_name='ایمیل')
+    regex_phone = RegexValidator(
+        regex=r'^09\d{9}$',
+        message='شماره تماس باید با 09 شروع شود و شامل 11 رقم باشد'
+    )
+    phone_number = models.CharField(max_length=11, verbose_name='شماره تماس', validators=[
+        regex_phone
+    ] )
+    subject = models.CharField(max_length=150, verbose_name='موضوع')
+    message = models.TextField(verbose_name='پیام')
+    created_at = models.DateTimeField(default=timezone.now)
+
+   
+    class Meta:
+        verbose_name = 'درخواست ارتباط'
+        verbose_name_plural = 'درخواست های ارتباط'
+
+
+    def __str__(self):
+        return f'درخواست تماس از طرف {self.email}'
