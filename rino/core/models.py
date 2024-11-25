@@ -5,8 +5,10 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 import uuid
 import slugify
 import os
-from django.core.validators import MaxLengthValidator
+from django.core.validators import MaxLengthValidator, RegexValidator
 from django.core.exceptions import ValidationError
+from django.db.models.signals import pre_save, post_save
+from django.dispatch import receiver
 # Create your models here.
 
     # Positions
@@ -48,10 +50,19 @@ PROJECT_TYPES = (
 )
 
 
+# some request type for contact us
+REQUEST_TYPE_CHOICES = (
+    ('individual','فردی'),
+    ('company','شرکت'),
+    ('business_owner','صاحب کسب و کار / مغازه')
+)
+
+
 # db for bad words in comments
 class BadWords(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     word = models.CharField(max_length=50,unique=True, verbose_name='کلمه نامناسب')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ انتشار')
 
     
     class Meta:
@@ -527,4 +538,85 @@ class PackageComments(models.Model):
 
     def __str__(self):
         return f'ثبت کامنت برای دوره آموزشی {self.package.title} توسط {self.first_name} {self.last_name}'
+
+
+class Contacts(models.Model):
+    full_name = models.CharField(max_length=50, verbose_name='نام و نام خانوادگی')
+    email = models.EmailField(verbose_name='ایمیل')
+    regex_phone = RegexValidator(
+        regex=r'^09\d{9}$',
+        message='شماره تماس باید با 09 شروع شود و شامل 11 رقم باشد'
+    )
+    phone_number = models.CharField(max_length=11, verbose_name='شماره تماس', validators=[
+        regex_phone
+    ] )
+    subject = models.CharField(max_length=150, verbose_name='موضوع')
+    message = models.TextField(verbose_name='پیام')
+    created_at = models.DateTimeField(default=timezone.now)
+
+   
+    class Meta:
+        verbose_name = 'درخواست ارتباط'
+        verbose_name_plural = 'درخواست های ارتباط'
+
+
+    def __str__(self):
+        return f'درخواست تماس از طرف {self.email}'
+    
+
+
+    
+
+class Profiles(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(Users, on_delete=models.CASCADE, verbose_name='کاربر')
+    slug = models.SlugField(verbose_name='اسلاگ', null=True, blank=True)
+
+
+    class Meta:
+        verbose_name = 'پروفایل'
+        verbose_name_plural = 'پروفایل ها'
+
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.user.user_name)
+        super(Profiles, self).save(*args, **kwargs)
+
+
+    
+    def __str__(self):
+        return self.user.user_name
+    
+
+# Create a user profile by default when user signsup
+@receiver(post_save, sender=Users)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profiles.objects.create(user=instance)
+
+
+@receiver(post_save, sender=Users)
+def save_profile(sender, instance, **kwargs):
+    instance.profile.save()
+    
+
+
+class PurchasedPackages(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    profile = models.ForeignKey(Profiles, on_delete=models.CASCADE, related_name='purchase_profile', verbose_name='پروفایل')
+    package = models.ForeignKey(Packages, on_delete=models.CASCADE, related_name='purchase_package', verbose_name='پکیج آموزشی')
+    purchase_date = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ خرید')
+
+   
+    class Meta:
+        verbose_name = 'پکیج خریداری شده'
+        verbose_name_plural = 'پکیج های خریداری شده'
+
+    
+   
+    def __str__(self):
+        return f'{self.profile.user.user_name} - {self.package.title}'
+    
+
 
