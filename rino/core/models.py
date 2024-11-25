@@ -7,6 +7,8 @@ import slugify
 import os
 from django.core.validators import MaxLengthValidator, RegexValidator
 from django.core.exceptions import ValidationError
+from django.db.models.signals import pre_save, post_save
+from django.dispatch import receiver
 # Create your models here.
 
     # Positions
@@ -585,6 +587,18 @@ class Profiles(models.Model):
     
     def __str__(self):
         return self.user.user_name
+    
+
+# Create a user profile by default when user signsup
+@receiver(post_save, sender=Users)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profiles.objects.create(user=instance)
+
+
+@receiver(post_save, sender=Users)
+def save_profile(sender, instance, **kwargs):
+    instance.profile.save()
     
 
 
