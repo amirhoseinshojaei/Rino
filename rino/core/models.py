@@ -60,6 +60,7 @@ REQUEST_TYPE_CHOICES = (
 class BadWords(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     word = models.CharField(max_length=50,unique=True, verbose_name='کلمه نامناسب')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ انتشار')
 
     
     class Meta:
@@ -559,3 +560,49 @@ class Contacts(models.Model):
 
     def __str__(self):
         return f'درخواست تماس از طرف {self.email}'
+    
+
+
+    
+
+class Profiles(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(Users, on_delete=models.CASCADE, verbose_name='کاربر')
+    slug = models.SlugField(verbose_name='اسلاگ', null=True, blank=True)
+
+
+    class Meta:
+        verbose_name = 'پروفایل'
+        verbose_name_plural = 'پروفایل ها'
+
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.user.user_name)
+        super(Profiles, self).save(*args, **kwargs)
+
+
+    
+    def __str__(self):
+        return self.user.user_name
+    
+
+
+class PurchasedPackages(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    profile = models.ForeignKey(Profiles, on_delete=models.CASCADE, related_name='purchase_profile', verbose_name='پروفایل')
+    package = models.ForeignKey(Packages, on_delete=models.CASCADE, related_name='purchase_package', verbose_name='پکیج آموزشی')
+    purchase_date = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ خرید')
+
+   
+    class Meta:
+        verbose_name = 'پکیج خریداری شده'
+        verbose_name_plural = 'پکیج های خریداری شده'
+
+    
+   
+    def __str__(self):
+        return f'{self.profile.user.user_name} - {self.package.title}'
+    
+
+
