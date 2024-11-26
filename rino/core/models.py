@@ -3,7 +3,8 @@ import datetime
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 import uuid
-import slugify
+# import slugify
+from django.utils.text import slugify
 import os
 from django.core.validators import MaxLengthValidator, RegexValidator
 from django.core.exceptions import ValidationError
@@ -163,6 +164,35 @@ class Users(AbstractBaseUser, PermissionsMixin):
         return True
 
 
+
+class AllBrands(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    brand_name = models.CharField(max_length=50, verbose_name='اسم برند')
+    website_url = models.URLField(verbose_name='لینک وب سایت', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'برند'
+        verbose_name_plural = 'برند ها'
+
+    
+    def get_upload_path(instance, filename):
+        brand_name = instance.brand_name
+
+        return os.path.join(
+            'brands_logo',
+            brand_name,
+            filename
+        )
+    
+    image = models.ImageField(upload_to=get_upload_path, verbose_name='لوگو برند')
+
+
+    def __str__(self):
+        return self.brand_name
+    
+
+
+    
 
 
 # Services db
@@ -631,7 +661,7 @@ def create_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Users)
 def save_profile(sender, instance, **kwargs):
-    instance.profile.save()
+    instance.profiles.save()
     
 
 
