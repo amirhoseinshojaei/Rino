@@ -9,6 +9,7 @@ from django.core.validators import MaxLengthValidator, RegexValidator
 from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
+from django.utils.html import mark_safe
 # Create your models here.
 
     # Positions
@@ -195,7 +196,7 @@ class Services(models.Model):
 
 
 # Services Multiple Images
-class SrviceImages(models.Model):
+class ServiceImages(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     service = models.ForeignKey(Services, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='services/', null=True, blank=True)
@@ -224,7 +225,7 @@ class TeamMembers(models.Model):
     instagram_link = models.URLField(verbose_name='لینک اینستاگرام', null=True, blank=True)
     twitter_link = models.URLField(verbose_name='لینک توییتر', null=True, blank=True)
     github_link = models.URLField(verbose_name='لینک گیت هاب', null=True, blank=True)
-    pinterest = models.URLField(verbose_name='لینک پینترست', null=True, blank=True)
+    website_link = models.URLField(verbose_name='لینک وب سایت', null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ انتشار')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
 
@@ -301,6 +302,15 @@ class Projects(models.Model):
         verbose_name_plural = 'پروژه ها'
 
 
+    def thumbnail(self):
+        if self.image:
+            return mark_safe(f'<img src="{self.image.url}" width="100" height="100" style="object-fit:cover;border-radius:8px;" />')
+        
+        return 'No Image'
+
+    thumbnail.short_description = 'پیش نمایش تصویر'
+
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -361,6 +371,16 @@ class Packages(models.Model):
     class Meta:
         verbose_name = 'پکیج آموزشی'
         verbose_name_plural = 'پکیج های آموزشی'
+
+
+
+    def thumbnail(self):
+        if self.image:
+            return mark_safe(f'<img src="{self.image.url}" width="100" height="100" style="object-fit:cover;border-radius:8px;" />')
+        
+        return 'No Image'
+
+    thumbnail.short_description = 'پیش نمایش تصویر'
 
     
     
@@ -459,7 +479,16 @@ class Blogs(models.Model):
             filename
         )
     
-    image = models.ImageField(upload_to=get_upload_path, verbose_name='ویدیو')
+    image = models.ImageField(upload_to=get_upload_path, verbose_name='تصویر معرفی')
+
+    
+    def thumbnail(self):
+        if self.image:
+            return mark_safe(f'<img src="{self.image.url}" width="100" height="100" style="object-fit:cover;border-radius:8px;" />')
+        
+        return 'No Image'
+
+    thumbnail.short_description = 'پیش نمایش تصویر'
 
 
     def save(self,*args,**kwargs):
@@ -503,6 +532,7 @@ class BlogComments(models.Model):
     blog = models.ForeignKey(Blogs, on_delete=models.CASCADE, related_name='blog_comments')
     first_name = models.CharField(max_length=50, verbose_name='نام')
     last_name = models.CharField(max_length=50, verbose_name='نام خانوادگی')
+    default_profile = models.ImageField(upload_to='default_profile/', default='default_profile.jpg')
     email = models.EmailField(verbose_name='ایمیل')
     comment = models.TextField(max_length=100, verbose_name='نظر', validators=[
         MaxLengthValidator(100),
@@ -525,6 +555,7 @@ class PackageComments(models.Model):
     first_name = models.CharField(max_length=50, verbose_name='نام ')    
     last_name = models.CharField(max_length=50, verbose_name='نام خانوادگی')
     email = models.EmailField(verbose_name='ایمیل')
+    default_profile = models.ImageField(upload_to='default_profile/', default='default_profile.jpg')
     comment = models.TextField(max_length=100, verbose_name='نظر', validators=[
         MaxLengthValidator(100),
         validate_no_bad_words
@@ -553,6 +584,8 @@ class Contacts(models.Model):
     subject = models.CharField(max_length=150, verbose_name='موضوع')
     message = models.TextField(verbose_name='پیام')
     created_at = models.DateTimeField(default=timezone.now)
+    request_type = models.CharField(max_length=50, choices=REQUEST_TYPE_CHOICES, default='individual' ,verbose_name='نوع درخواست')
+    status = models.BooleanField(default=False, verbose_name='پیگیری شد')
 
    
     class Meta:
