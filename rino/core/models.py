@@ -3,7 +3,8 @@ import datetime
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 import uuid
-import slugify
+# import slugify
+from django.utils.text import slugify
 import os
 from django.core.validators import MaxLengthValidator, RegexValidator
 from django.core.exceptions import ValidationError
@@ -631,7 +632,7 @@ def create_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Users)
 def save_profile(sender, instance, **kwargs):
-    instance.profile.save()
+    instance.profiles.save()
     
 
 
