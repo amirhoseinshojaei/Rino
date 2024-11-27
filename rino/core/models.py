@@ -216,7 +216,7 @@ class Services(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
 
-        super(Services, self).save(self.title)
+        super(Services, self).save(*args, **kwargs)
 
 
 
@@ -379,7 +379,7 @@ class SaysDescriptions(models.Model):
         verbose_name_plural = 'گفته های مشتریان'
 
     def __str__(self):
-        return self.customer
+        return f'{self.customer.full_name}: {self.description[:30]}...'
     
 
 
@@ -683,3 +683,58 @@ class PurchasedPackages(models.Model):
     
 
 
+class Counters(models.Model):
+    title = models.CharField(max_length=50, verbose_name='عنوان')
+    icon = models.ImageField(upload_to='counters/icons/', verbose_name='آیکون')
+    count = models.PositiveIntegerField(verbose_name='تعداد')
+    delay = models.CharField(max_length=10, verbose_name="تاخیر انیمیشن", default="300ms")
+    color = models.CharField(max_length=50, verbose_name="رنگ", default="#ffffff")
+
+    class Meta:
+        verbose_name = "شمارنده"
+        verbose_name_plural = "شمارنده‌ها"
+
+    def __str__(self):
+        return self.title  
+    
+
+
+
+class Skills(models.Model):
+    title = models.CharField(max_length=50, verbose_name='عنوان', help_text='مثلا: توسعه')
+    progress_precentage = models.PositiveIntegerField(verbose_name='درصد پیشرفت', help_text='مثلا یک عدد بین 0 تا 100')
+    color = models.CharField(max_length=50, verbose_name='رنگ پیشرفت', help_text='رنگ زرد : #f0ff33', default='#3374ff')
+
+    class Meta:
+        verbose_name = 'مهارت'
+        verbose_name_plural = 'مهارت ها'
+
+
+    def __str__(self):
+        return self.title
+    
+
+
+
+class SkillSection(models.Model):
+    title = models.CharField(max_length=50, verbose_name='عنوان')
+    description = models.TextField(verbose_name='توضیح')
+    image = models.ImageField(upload_to='skill-section/', verbose_name='تصویر')
+
+    upload_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ انتشار')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+
+    class Meta:
+        verbose_name = 'بخش مهارت'
+        verbose_name_plural = 'بخش مهارت ها'
+
+
+    def thumbnail(self):
+        if self.image:
+            return mark_safe(f'<img src="{self.image.url}" width="100" height="100" style="object-fit:cover;border-radius:8px;" />')
+        
+        return 'No Image'
+
+    
+    def __str__(self):
+        return self.title
