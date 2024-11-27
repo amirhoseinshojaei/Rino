@@ -19,7 +19,11 @@ from . models import (
     Blogs,
     Contacts,
     Profiles,
-    PurchasedPackages
+    PurchasedPackages,
+    AllBrands,
+    Counters,
+    Skills,
+    SkillSection
 )
 # Register your models here.
 
@@ -732,3 +736,172 @@ class ProfileAdmin(admin.ModelAdmin):
     def has_view_permission(self, request, obj =None):
         return request.user.is_superuser or request.user.is_staff
     
+
+
+
+
+@admin.register(AllBrands)
+class AllBrandsAdmin(admin.ModelAdmin):
+    list_display = (
+        'brand_name',
+        'website_url'
+    )
+
+    list_filter = (
+        'website_url',
+    )
+
+    search_fields = (
+        'brand_name',
+    )
+
+
+    def has_add_permission(self, request):
+        return request.user.is_superuser 
+    
+
+    def has_delete_permission(self, request, obj =None):
+        return request.user.is_superuser  
+    
+
+    def has_change_permission(self, request, obj =None):
+        return request.user.is_superuser  
+    
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_view_permission(self, request, obj =None):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+
+
+
+@admin.register(Counters)
+class CountersAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
+        'icon',
+        'count',
+        'delay',
+        'color'
+    )
+
+    list_filter = (
+        'title',
+    )
+
+    search_fields = (
+        'title',
+    )
+
+
+    def has_add_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_delete_permission(self, request, obj =None):
+        return request.user.is_superuser  or request.user.is_staff
+    
+
+    def has_change_permission(self, request, obj =None):
+        return request.user.is_superuser  or request.user.is_staff
+    
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_view_permission(self, request, obj =None):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+
+
+@admin.register(Skills)
+class SkillsAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
+        'progress_precentage',
+        'color'
+    )
+
+    list_editable = (
+        'progress_precentage',
+        'color'
+    )
+
+    list_filter = (
+        'progress_precentage',
+    )
+
+    search_fields = (
+        'title',
+    )
+
+    def has_add_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_delete_permission(self, request, obj =None):
+        return request.user.is_superuser  or request.user.is_staff
+    
+
+    def has_change_permission(self, request, obj =None):
+        return request.user.is_superuser  or request.user.is_staff
+    
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_view_permission(self, request, obj =None):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+
+@admin.register(SkillSection)
+class SkillSectionAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
+        'image',
+        'upload_at',
+        'updated_at'
+    )
+
+    list_filter = (
+        'updated_at',
+    )
+
+    # list_editable = (
+    #     'title',
+    # )
+
+    search_fields = (
+        'title',
+    )
+
+    def has_add_permission(self, request):
+        if SkillSection.objects.count() >= 1:
+            return False
+        
+        super().has_add_permission(request)
+
+
+    def has_change_permission(self, request, obj = None):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_delete_permission(self, request, obj = None):
+        return request.user.is_superuser
+    
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_view_permission(self, request, obj = None):
+        return request.user.is_superuser or request.user.is_staff
+        
