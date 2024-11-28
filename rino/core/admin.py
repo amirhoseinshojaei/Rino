@@ -23,7 +23,12 @@ from . models import (
     AllBrands,
     Counters,
     Skills,
-    SkillSection
+    SkillSection,
+    ContactNumbers,
+    CtaSection,
+    ServiceIntroductions,
+    ServiceFeature,
+    CallArea
 )
 # Register your models here.
 
@@ -47,14 +52,21 @@ class PackageCommentsAdmin(admin.StackedInline):
 
 class BlogImagesAdmin(admin.StackedInline):
     model = BlogImages
+    extra = 1
 
 
 class BlogCommentsAdmin(admin.StackedInline):
     model = BlogComments
+    extra = 1
 
 
 class PurchasedPackagesAdmin(admin.StackedInline):
     model = PurchasedPackages
+
+
+
+class ServiceFeatureAdmin(admin.StackedInline):
+    model = ServiceFeature
 
 
 
@@ -583,6 +595,9 @@ class BlogsAdmin(admin.ModelAdmin):
         'updated_at'
     )
 
+    inlines = (BlogImagesAdmin,BlogCommentsAdmin)
+
+
     list_filter = (
         'category',
         'upload_at',
@@ -866,6 +881,7 @@ class SkillsAdmin(admin.ModelAdmin):
 class SkillSectionAdmin(admin.ModelAdmin):
     list_display = (
         'title',
+        'title_2',
         'image',
         'upload_at',
         'updated_at'
@@ -905,3 +921,188 @@ class SkillSectionAdmin(admin.ModelAdmin):
     def has_view_permission(self, request, obj = None):
         return request.user.is_superuser or request.user.is_staff
         
+
+
+
+@admin.register(ContactNumbers)
+class ContactNumbersAdmin(admin.ModelAdmin):
+    list_display = (
+        'phone_number',
+        'is_staff'
+    )
+
+    list_filter = (
+        'is_staff',
+    )
+
+    list_editable = (
+        'is_staff',
+    )
+
+    search_fields = (
+        'title',
+    )
+
+    def has_add_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_delete_permission(self, request, obj =None):
+        return request.user.is_superuser  or request.user.is_staff
+    
+
+    def has_change_permission(self, request, obj =None):
+        return request.user.is_superuser  or request.user.is_staff
+    
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_view_permission(self, request, obj =None):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+
+
+
+@admin.register(CtaSection)
+class CtaSectionAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
+        'video_url',
+        'button_text',
+        'button_url',
+        'created_at',
+        'updated_at'
+    )
+
+    list_filter = (
+        'updated_at',
+    )
+
+    list_editable = (
+        'video_url',
+        'button_text',
+        'button_url'
+    )
+
+    search_fields = (
+        'title',
+    )
+
+    date_hierarchy = 'created_at'
+
+
+    
+    def has_add_permission(self, request):
+        if CtaSection.objects.count() >=1:
+            return False
+        
+        super().has_add_permission(request)
+    
+
+    def has_delete_permission(self, request, obj =None):
+        return request.user.is_superuser  or request.user.is_staff
+    
+
+    def has_change_permission(self, request, obj =None):
+        return request.user.is_superuser  or request.user.is_staff
+    
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_view_permission(self, request, obj =None):
+        return request.user.is_superuser or request.user.is_staff     
+
+
+
+
+@admin.register(ServiceIntroductions)   
+class ServiceIntroductionsAdmin(admin.ModelAdmin):
+    list_display = (
+        'heading',
+        'title',
+        'created_at',
+        'updated_at'
+    )
+
+    inlines = [ServiceFeatureAdmin]
+
+    list_filter = (
+        'updated_at',
+    )
+
+
+    readonly_fields = (
+        'created_at',
+        'updated_at'
+    )
+
+
+    def has_add_permission(self, request):
+        if ServiceIntroductions.objects.count() >=1:
+            return False
+        
+        super().has_add_permission(request)
+
+
+    def has_delete_permission(self, request, obj =None):
+        return request.user.is_superuser  
+    
+
+    def has_change_permission(self, request, obj =None):
+        return request.user.is_superuser  or request.user.is_staff
+    
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_view_permission(self, request, obj =None):
+        return request.user.is_superuser or request.user.is_staff     
+
+
+
+
+@admin.register(CallArea)
+class CallAreaAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
+        'video_url',
+        'created_at',
+        'updated_at'
+    )
+
+    list_filter = (
+        'updated_at',
+    )
+
+    readonly_fields = (
+        'created_at',
+        'updated_at'
+    )
+
+    def has_add_permission(self, request):
+        if ServiceIntroductions.objects.count() >=1:
+            return False
+        
+        super().has_add_permission(request)
+
+
+    def has_delete_permission(self, request, obj =None):
+        return request.user.is_superuser  
+    
+
+    def has_change_permission(self, request, obj =None):
+        return request.user.is_superuser  or request.user.is_staff
+    
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_view_permission(self, request, obj =None):
+        return request.user.is_superuser or request.user.is_staff     

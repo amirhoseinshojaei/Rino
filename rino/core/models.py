@@ -300,7 +300,7 @@ class ProjectsCategory(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            self.slug = slugify(self.title)
         
         super(ProjectsCategory, self).save(*args, **kwargs)
 
@@ -527,6 +527,11 @@ class Blogs(models.Model):
 
         super(Blogs, self).save(*args, **kwargs)
 
+
+    def comment_count(self):
+        return self.blog_comments.count()
+
+
     
     def __str__(self):
         return self.title
@@ -599,6 +604,8 @@ class PackageComments(models.Model):
 
     def __str__(self):
         return f'ثبت کامنت برای دوره آموزشی {self.package.title} توسط {self.first_name} {self.last_name}'
+    
+
 
 
 class Contacts(models.Model):
@@ -718,6 +725,7 @@ class Skills(models.Model):
 
 class SkillSection(models.Model):
     title = models.CharField(max_length=50, verbose_name='عنوان')
+    title_2 = models.CharField(max_length=50, verbose_name='عنوان 2')
     description = models.TextField(verbose_name='توضیح')
     image = models.ImageField(upload_to='skill-section/', verbose_name='تصویر')
 
@@ -736,5 +744,105 @@ class SkillSection(models.Model):
         return 'No Image'
 
     
+    def __str__(self):
+        return self.title
+    
+
+
+
+class ContactNumbers(models.Model):
+    regex_phone = RegexValidator(
+        regex= r'^09\d{9}$',
+        message= 'عدد باید با فرمت صحیح و با 09 شروع شود'
+    )
+
+    phone_number = models.CharField(max_length=11, unique=True ,validators=[regex_phone], verbose_name='شماره تماس')
+    is_staff = models.BooleanField(default=True, verbose_name='فعال')
+
+   
+    class Meta:
+        verbose_name = 'شماره تماس شرکت'
+        verbose_name_plural = 'شماره تماس های شرکت'
+
+
+    
+    def __str__(self):
+        return self.phone_number
+    
+
+
+
+
+class CtaSection(models.Model):
+    title = models.CharField(max_length=50, verbose_name='عنوان')
+    description = models.TextField(verbose_name='توضیحات')
+    video_url = models.URLField(verbose_name='لینک ویدیو') 
+    button_text = models.CharField(verbose_name='متن دکمه', help_text='مثلا ویدیو های بیشتر', max_length=50)
+    button_url = models.URLField(verbose_name='لینک دکمه')
+    bg_image = models.ImageField(upload_to='cta_section/background_image/', verbose_name='تصویر بک گراند')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ انتشار')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+
+
+    class Meta:
+        verbose_name = 'cta-section'
+        verbose_name_plural = 'cta-section'
+
+
+    def __str__(self):
+        return self.title
+
+
+
+
+
+class ServiceIntroductions(models.Model):
+    heading = models.CharField(max_length=50 , verbose_name='عنوان 1')
+    title = models.CharField(max_length=50, verbose_name='عنوان')
+    description = models.TextField(verbose_name='توضیحات')
+    image = models.ImageField(upload_to='service-introductions/', verbose_name='تصویر')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'بخش معرفی خدمات'
+        verbose_name_plural = 'بخش های معرفی خدمات'
+
+    
+    def __str__(self):
+        return self.title
+    
+
+
+
+class ServiceFeature(models.Model):
+    service_introduction = models.ForeignKey(ServiceIntroductions, on_delete=models.CASCADE, related_name='features')
+    title = models.CharField(max_length=200, verbose_name='عنوان ویژگی')
+    step = models.IntegerField(verbose_name='مرحله')
+    description = models.TextField(verbose_name='توضیحات')
+    icon = models.ImageField(upload_to='about/icons/', verbose_name='آیکون')
+    
+    class Meta:
+        verbose_name = 'ویژگی خدمات'
+        verbose_name_plural = 'ویژگی‌های خدمات'
+        ordering = ['step']
+
+    def __str__(self):
+        return f"{self.title} - مرحله {self.step}"
+    
+
+
+
+class CallArea(models.Model):
+    title = models.CharField(max_length=50, verbose_name='عنوان')
+    video_url = models.URLField(verbose_name='لینک ویدیو')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+    class Meta:
+        verbose_name_plural = 'Call Area'
+
+
     def __str__(self):
         return self.title
