@@ -1,8 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from . models import (AllBrands, Services, Projects, CustomersSays, Blogs, Counters, Skills, SkillSection,
                       ContactNumbers, CtaSection, ProjectsCategory, ServiceIntroductions, CallArea, TeamMembers, FAQ)
 
 from django.db import models
+from django.contrib import messages
+from django.http import Http404
 # Create your views here.
 
 
@@ -63,4 +65,41 @@ def about(request):
     return render(request, 'core/about.html',{
         'team': team_members,
         'faq': faqs
+    })
+
+
+
+def comming_soon(request):
+    return render (request, 'core/comming_soon.html',{})
+
+
+
+
+def services(request):
+    services = Services.objects.all()
+    return render(request, 'core/services.html',{
+        'services':services
+    })
+
+
+
+
+def service_detail(request, slug):
+    try:
+        service = get_object_or_404(Services, slug=slug)
+        return render(request, 'core/service.html', {
+            'service':service
+        })
+    
+    except Http404:
+        messages.error(request,'صفحه مورد نظر یافت نشد')
+        return render(request,'404.html', status=404)
+
+
+
+
+def team_members(request):
+    team = TeamMembers.objects.filter(status=True)
+    return render(request, 'core/team.html', {
+        'team': team
     })
