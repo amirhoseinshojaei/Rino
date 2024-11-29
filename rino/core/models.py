@@ -264,6 +264,28 @@ class TeamMembers(models.Model):
         verbose_name_plural = 'اعضای تیم'
 
 
+    def get_upload_path(instance, filename):
+        full_name = instance.full_name
+
+        return os.path.join(
+            'teams',
+            full_name,
+            filename
+        )
+    
+    image = models.ImageField(upload_to=get_upload_path, null=True, blank=True)
+
+
+
+    def thumbnail(self):
+        if self.image:
+            return mark_safe(f'<img src="{self.image.url}" width="100" height="100" style="object-fit:cover;border-radius:8px;" />')
+        
+        return 'No Image'
+
+    thumbnail.short_description = 'پیش نمایش تصویر'
+
+
     def __str__(self):
         return self.full_name
     
@@ -846,3 +868,24 @@ class CallArea(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+
+
+class FAQ(models.Model):
+    question = models.CharField(max_length=255, verbose_name="سوال")
+    answer = models.TextField(verbose_name="پاسخ")
+    number = models.PositiveIntegerField(verbose_name="شماره سوال")
+    icon = models.CharField(
+        max_length=50, 
+        default="fa-sharp fa-solid fa-circle-check", 
+        verbose_name="آیکون"
+    )
+
+    class Meta:
+        verbose_name = "سوال متداول"
+        verbose_name_plural = "سوالات متداول"
+        ordering = ['number']
+
+    def __str__(self):
+        return f"{self.number}. {self.question}"

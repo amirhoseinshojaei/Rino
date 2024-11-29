@@ -1,13 +1,12 @@
 from django.shortcuts import render
 from . models import (AllBrands, Services, Projects, CustomersSays, Blogs, Counters, Skills, SkillSection,
-                      ContactNumbers, CtaSection, ProjectsCategory, ServiceIntroductions, CallArea)
+                      ContactNumbers, CtaSection, ProjectsCategory, ServiceIntroductions, CallArea, TeamMembers, FAQ)
 
 from django.db import models
 # Create your views here.
 
 
 
-# 
 
 
 
@@ -53,4 +52,15 @@ def index(request):
         'about_section': about_section,
         'about_items': about_items,
         'call_area': call_area
+    })
+
+
+
+def about(request):
+    team_members = TeamMembers.objects.filter(status=True)
+    faqs = FAQ.objects.all()
+
+    return render(request, 'core/about.html',{
+        'team': team_members,
+        'faq': faqs
     })
