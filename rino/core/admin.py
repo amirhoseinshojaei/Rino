@@ -28,7 +28,8 @@ from . models import (
     CtaSection,
     ServiceIntroductions,
     ServiceFeature,
-    CallArea
+    CallArea,
+    FAQ
 )
 # Register your models here.
 
@@ -228,6 +229,7 @@ class ServicesAdmin(admin.ModelAdmin):
 class TeammembersAdmin(admin.ModelAdmin):
     list_display = (
         'full_name',
+        'thumbnail',
         'position',
         'status',
         'face_book_link',
@@ -1106,3 +1108,44 @@ class CallAreaAdmin(admin.ModelAdmin):
 
     def has_view_permission(self, request, obj =None):
         return request.user.is_superuser or request.user.is_staff     
+    
+
+
+
+@admin.register(FAQ)
+class FaqAdmin(admin.ModelAdmin):
+    list_display = (
+        'number',
+        'question',
+
+    )
+
+
+    list_filter = (
+        'question',
+    )
+
+    search_fields = (
+        'number',
+        'question'
+    )
+
+
+    def has_add_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+
+
+    def has_delete_permission(self, request, obj =None):
+        return request.user.is_superuser  
+    
+
+    def has_change_permission(self, request, obj =None):
+        return request.user.is_superuser  or request.user.is_staff
+    
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_view_permission(self, request, obj =None):
+        return request.user.is_superuser or request.user.is_staff 
