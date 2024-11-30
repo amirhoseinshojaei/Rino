@@ -5,6 +5,7 @@ from . models import (AllBrands, Services, Projects, CustomersSays, Blogs, Count
 from django.db import models
 from django.contrib import messages
 from django.http import Http404
+from persiantools.jdatetime import JalaliDate
 # Create your views here.
 
 
@@ -111,11 +112,14 @@ def team_members(request):
 
 
 
-def team_member_detail(request, full_name):
+def team_member_detail(request, slug):
     try:
-        member = get_object_or_404(TeamMembers, full_name=full_name)
+        member = get_object_or_404(TeamMembers, slug=slug)
+        jalali_date = JalaliDate(member.date_joined).strftime("%Y/%m/%d")
+
         return render(request, 'core/team_member_detail.html', {
-            'member':member
+            'member':member,
+            'jalali_date':jalali_date
         })
     
     except Http404:
