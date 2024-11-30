@@ -87,8 +87,12 @@ def services(request):
 def service_detail(request, slug):
     try:
         service = get_object_or_404(Services, slug=slug)
-        return render(request, 'core/service.html', {
-            'service':service
+        services = Services.objects.all().order_by('-date_added')[:4]
+        images = service.images.all()
+        return render(request, 'core/service_detail.html', {
+            'service':service,
+            'services':services,
+            'images':images
         })
     
     except Http404:
@@ -103,3 +107,17 @@ def team_members(request):
     return render(request, 'core/team.html', {
         'team': team
     })
+
+
+
+
+def team_member_detail(request, full_name):
+    try:
+        member = get_object_or_404(TeamMembers, full_name=full_name)
+        return render(request, 'core/team_member_detail.html', {
+            'member':member
+        })
+    
+    except Http404:
+        messages.error(request, 'صفحه مورد نظر یافت نشد')
+        return render(request, '404.html', status=404)
