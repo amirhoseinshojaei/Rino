@@ -12,5 +12,5 @@ urlpatterns = [
     path('services/', views.services, name='services'),
     path('service/<str:slug>/', views.service_detail, name='service_detail'),
     path('team-us/', views.team_members, name='team'),
-    path('team-us/<str:full_name>/', views.team_member_detail, name='team_member'),
+    path('team-us/<str:slug>/', views.team_member_detail, name='team_member'),
 ]
