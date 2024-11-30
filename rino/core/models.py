@@ -247,6 +247,7 @@ class ServiceImages(models.Model):
 class TeamMembers(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     full_name = models.CharField(max_length=50, verbose_name='نام و نام خانوادگی')
+    slug = models.SlugField(verbose_name='اسلاگ')
     position = models.CharField(max_length=50, choices=POSITION_CHOICES ,verbose_name='سمت')
     description_duties = models.TextField(verbose_name='درباره وظایف')
     status = models.BooleanField(default=True, verbose_name='وضعیت')
