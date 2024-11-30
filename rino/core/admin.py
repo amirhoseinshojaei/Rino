@@ -229,6 +229,7 @@ class ServicesAdmin(admin.ModelAdmin):
 class TeammembersAdmin(admin.ModelAdmin):
     list_display = (
         'full_name',
+        'slug',
         'thumbnail',
         'position',
         'status',

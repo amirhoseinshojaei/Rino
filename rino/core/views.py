@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from . models import (AllBrands, Services, Projects, CustomersSays, Blogs, Counters, Skills, SkillSection,
                       ContactNumbers, CtaSection, ProjectsCategory, ServiceIntroductions, CallArea, TeamMembers, FAQ)
 
 from django.db import models
+from django.contrib import messages
+from django.http import Http404
+from persiantools.jdatetime import JalaliDate
 # Create your views here.
 
 
@@ -64,3 +67,61 @@ def about(request):
         'team': team_members,
         'faq': faqs
     })
+
+
+
+def comming_soon(request):
+    return render (request, 'core/comming_soon.html',{})
+
+
+
+
+def services(request):
+    services = Services.objects.all()
+    return render(request, 'core/services.html',{
+        'services':services
+    })
+
+
+
+
+def service_detail(request, slug):
+    try:
+        service = get_object_or_404(Services, slug=slug)
+        services = Services.objects.all().order_by('-date_added')[:4]
+        images = service.images.all()
+        return render(request, 'core/service_detail.html', {
+            'service':service,
+            'services':services,
+            'images':images
+        })
+    
+    except Http404:
+        messages.error(request,'صفحه مورد نظر یافت نشد')
+        return render(request,'404.html', status=404)
+
+
+
+
+def team_members(request):
+    team = TeamMembers.objects.filter(status=True)
+    return render(request, 'core/team.html', {
+        'team': team
+    })
+
+
+
+
+def team_member_detail(request, slug):
+    try:
+        member = get_object_or_404(TeamMembers, slug=slug)
+        jalali_date = JalaliDate(member.date_joined).strftime("%Y/%m/%d")
+
+        return render(request, 'core/team_member_detail.html', {
+            'member':member,
+            'jalali_date':jalali_date
+        })
+    
+    except Http404:
+        messages.error(request, 'صفحه مورد نظر یافت نشد')
+        return render(request, '404.html', status=404)
