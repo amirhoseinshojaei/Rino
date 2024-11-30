@@ -199,7 +199,7 @@ class AllBrands(models.Model):
 class Services(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=50, verbose_name='عنوان')
-    slug = models.SlugField(verbose_name='اسلاگ', null=True, blank=True)
+    slug = models.SlugField(verbose_name='اسلاگ')
     image = models.ImageField(upload_to='services/', verbose_name='تصویر')
     description = models.TextField(verbose_name='توضیحات')
     video = models.URLField(verbose_name='ویدیو', null=True, blank=True)
