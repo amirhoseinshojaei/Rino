@@ -13,4 +13,6 @@ urlpatterns = [
     path('service/<str:slug>/', views.service_detail, name='service_detail'),
     path('team-us/', views.team_members, name='team'),
     path('team-us/<str:slug>/', views.team_member_detail, name='team_member'),
+    path('projects/', views.projects, name='projects'),
+    path('project/<str:slug>/', views.project_detail, name='project_detail'),
 ]

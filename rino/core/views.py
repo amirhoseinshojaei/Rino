@@ -125,3 +125,32 @@ def team_member_detail(request, slug):
     except Http404:
         messages.error(request, 'صفحه مورد نظر یافت نشد')
         return render(request, '404.html', status=404)
+    
+
+
+
+def projects(request):
+    projects = Projects.objects.all()
+    
+    return render(request, 'core/projects.html', {
+        'projects':projects
+    })
+
+
+
+
+def project_detail(request, slug):
+    try:
+        project = get_object_or_404(Projects, slug=slug)
+        start_date = JalaliDate(project.start_date).strftime("%Y/%m/%d")
+        end_date = JalaliDate(project.end_date).strftime("%Y/%m/%d")
+
+        return render(request, 'core/project_detail.html', {
+            'project':project,
+            'start_date':start_date,
+            'end_date':end_date
+        })
+    
+    except Http404:
+        messages.error('صفحه مورد نظر یافت نشد')
+        return render(request, '404.html', status=404)
