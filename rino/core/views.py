@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from . models import (AllBrands, Services, Projects, CustomersSays, Blogs, Counters, Skills, SkillSection,
-                      ContactNumbers, CtaSection, ProjectsCategory, ServiceIntroductions, CallArea, TeamMembers, FAQ)
+                      ContactNumbers, CtaSection, ProjectsCategory, ServiceIntroductions, CallArea, TeamMembers, FAQ,
+                      SaysDescriptions,Bootcamps)
 
 from django.db import models
 from django.contrib import messages
@@ -154,3 +155,24 @@ def project_detail(request, slug):
     except Http404:
         messages.error('صفحه مورد نظر یافت نشد')
         return render(request, '404.html', status=404)
+
+
+
+
+def testimonials(request):
+    customers = CustomersSays.objects.all()
+    customer_says = SaysDescriptions.objects.select_related('customer').all()
+
+    return render(request, 'core/testimonials.html', {
+        'customers':customers,
+        'customer_says':customer_says
+    })
+
+
+
+
+def bootcamps(request):
+    bootcamps = Bootcamps.objects.filter(status=True)
+    return render(request, 'core/bootcamps.html', {
+        'bootcamps':bootcamps
+    })
