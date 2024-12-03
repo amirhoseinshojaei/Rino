@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from . models import (AllBrands, Services, Projects, CustomersSays, Blogs, Counters, Skills, SkillSection,
                       ContactNumbers, CtaSection, ProjectsCategory, ServiceIntroductions, CallArea, TeamMembers, FAQ,
-                      SaysDescriptions,Bootcamps)
+                      SaysDescriptions,Bootcamps,Packages, PackagesEpisode)
 
 from django.db import models
 from django.contrib import messages
@@ -176,3 +176,27 @@ def bootcamps(request):
     return render(request, 'core/bootcamps.html', {
         'bootcamps':bootcamps
     })
+
+
+
+def packages(request):
+    packages = Packages.objects.all()
+    return render(request,'core/packages.html',{
+        'packages':packages
+    })
+
+
+
+
+# def package_detail(request,slug):
+#     try:
+#         package = get_object_or_404(Packages, slug=slug)
+#         package_videos = PackagesEpisode.objects.select_related('package')
+#         return render(request, 'core/package_detail',{
+#             'package':package,
+#             'videos':package_videos
+#         })
+    
+#     except Http404:
+#         messages.error(request,'صفحه مورد نظر یافت نشد')
+#         return render(request,'404.html', status=404)
