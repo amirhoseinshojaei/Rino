@@ -15,4 +15,6 @@ urlpatterns = [
     path('team-us/<str:slug>/', views.team_member_detail, name='team_member'),
     path('projects/', views.projects, name='projects'),
     path('project/<str:slug>/', views.project_detail, name='project_detail'),
+    path('testimonials/', views.testimonials, name='testimonials'),
+    path('bootcamps/', views.bootcamps, name='boot_camps')
 ]
