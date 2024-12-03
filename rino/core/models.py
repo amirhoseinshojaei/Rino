@@ -890,3 +890,53 @@ class FAQ(models.Model):
 
     def __str__(self):
         return f"{self.number}. {self.question}"
+    
+
+
+
+class Bootcamps(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=50, verbose_name='عنوان')
+    price_per_month = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='قیمت هر ماه')
+    start_date = models.DateTimeField(null=True, blank=True, verbose_name='تاریخ شروع دوره')
+    end_date = models.DateTimeField(null=True, blank=True, verbose_name='تاریخ پایان دوره')
+    feature_1 = models.CharField(max_length=50, verbose_name='فیچر 1')
+    feature_2 = models.CharField(max_length=50, verbose_name='فیچر 2')
+    feature_3 = models.CharField(max_length=50, verbose_name='فیچر 3')
+    feature_4 = models.CharField(max_length=50, verbose_name='فیچر 4')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ انتشار')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+    status = models.BooleanField(default=False, verbose_name='وضعیت', help_text='مثلا:فعال')
+
+    class Meta:
+        verbose_name = "بوت کمپ آموزشی"
+        verbose_name_plural = 'بوت کمپ های آموزشی'
+
+
+    def get_upload_path(instance, filename):
+        title = instance.title
+
+        return os.path.join(
+            'Bootcamps',
+            title,
+            filename
+        )
+    
+    image = models.ImageField(upload_to=get_upload_path)
+
+
+    def thumbnail(self):
+        if self.image:
+            return mark_safe(f'<img src="{self.image.url}" width="100" height="100" style="object-fit:cover;border-radius:8px;" />')
+        
+        return 'No Image'
+
+    thumbnail.short_description = 'پیش نمایش تصویر'
+
+
+
+    def __str__(self):
+        return self.title
+
+
+    
