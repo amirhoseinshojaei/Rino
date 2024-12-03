@@ -29,7 +29,8 @@ from . models import (
     ServiceIntroductions,
     ServiceFeature,
     CallArea,
-    FAQ
+    FAQ,
+    Bootcamps
 )
 # Register your models here.
 
@@ -1150,3 +1151,59 @@ class FaqAdmin(admin.ModelAdmin):
 
     def has_view_permission(self, request, obj =None):
         return request.user.is_superuser or request.user.is_staff 
+    
+
+
+
+@admin.register(Bootcamps)
+class BootcampsAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
+        'price_per_month',
+        'thumbnail',
+        'start_date',
+        'end_date',
+        'feature_1',
+        'feature_2',
+        'feature_3',
+        'feature_4',
+        'created_at',
+        'updated_at',
+        'status'
+
+    )
+
+    list_editable = (
+        'price_per_month',
+    )
+
+    list_filter = (
+        'start_date',
+        'end_date'
+    )
+
+    readonly_fields = (
+        'created_at',
+        'updated_at'
+    )
+
+    
+    
+    def has_add_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+
+
+    def has_delete_permission(self, request, obj =None):
+        return request.user.is_superuser  
+    
+
+    def has_change_permission(self, request, obj =None):
+        return request.user.is_superuser  or request.user.is_staff
+    
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser or request.user.is_staff
+    
+
+    def has_view_permission(self, request, obj =None):
+        return request.user.is_superuser or request.user.is_staff
